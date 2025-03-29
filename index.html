@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamVerse - Ultimate Streaming Experience</title>
+    <title>StreamVerse 2.0 - Next-Gen Streaming</title>
     <style>
         * {
             margin: 0;
@@ -18,6 +18,51 @@
             scroll-behavior: smooth;
         }
 
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            z-index: 1000;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff4b5c;
+            margin-bottom: 30px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar ul li {
+            margin: 20px 0;
+        }
+
+        .sidebar ul li a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 18px;
+            transition: color 0.3s ease;
+        }
+
+        .sidebar ul li a:hover {
+            color: #ff4b5c;
+        }
+
         /* Header */
         header {
             display: flex;
@@ -25,42 +70,16 @@
             align-items: center;
             padding: 20px 50px;
             background: rgba(20, 20, 20, 0.9);
-            backdrop-filter: blur(10px);
             position: fixed;
             width: 100%;
             top: 0;
-            z-index: 1000;
+            z-index: 999;
         }
 
-        .logo {
+        .menu-toggle {
             font-size: 24px;
-            font-weight: bold;
-            color: #ff4b5c;
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-        }
-
-        nav ul li {
-            margin: 0 20px;
-        }
-
-        nav ul li a {
-            text-decoration: none;
+            cursor: pointer;
             color: #fff;
-            font-size: 16px;
-            transition: color 0.3s ease;
-        }
-
-        nav ul li a:hover {
-            color: #ff4b5c;
-        }
-
-        .search-profile {
-            display: flex;
-            align-items: center;
         }
 
         .search-profile input {
@@ -77,35 +96,50 @@
             height: 40px;
             background: #ff4b5c;
             border-radius: 50%;
+            cursor: pointer;
         }
 
-        /* Hero Section */
+        /* Hero Section with Carousel */
         .hero {
             height: 100vh;
-            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-size: cover;
             background-position: center;
             display: flex;
             flex-direction: column;
             justify-content: center;
             padding: 0 50px;
-            text-align: left;
+            opacity: 0;
+            transition: opacity 1s ease;
         }
 
-        .hero h1 {
+        .hero-slide.active {
+            opacity: 1;
+        }
+
+        .hero-slide h1 {
             font-size: 48px;
             margin-bottom: 20px;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
 
-        .hero p {
+        .hero-slide p {
             font-size: 18px;
             margin-bottom: 30px;
             color: #ccc;
         }
 
-        .hero button {
+        .hero-slide button {
             padding: 15px 30px;
             background: #ff4b5c;
             border: none;
@@ -116,7 +150,7 @@
             transition: transform 0.3s ease, background 0.3s ease;
         }
 
-        .hero button:hover {
+        .hero-slide button:hover {
             background: #e43a4b;
             transform: scale(1.05);
         }
@@ -124,6 +158,7 @@
         /* Content Sections */
         .content-section {
             padding: 50px;
+            margin-left: 250px;
         }
 
         .content-section h2 {
@@ -194,59 +229,104 @@
             cursor: pointer;
         }
 
-        /* Footer */
-        footer {
+        /* Modal for Video Playback */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            width: 80%;
+            max-width: 800px;
+            background: #1a1a1a;
+            border-radius: 10px;
             padding: 20px;
-            text-align: center;
-            background: #141414;
-            color: #ccc;
+            position: relative;
+        }
+
+        .modal-content video {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* Accessibility */
+        a:focus, button:focus {
+            outline: 2px solid #ff4b5c;
+            outline-offset: 2px;
         }
     </style>
 </head>
 <body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">StreamVerse</div>
+        <ul>
+            <li><a href="#movies">Movies</a></li>
+            <li><a href="#series">Series</a></li>
+            <li><a href="#live">Live</a></li>
+            <li><a href="#mylist">My List</a></li>
+        </ul>
+    </div>
+
     <!-- Header -->
     <header>
-        <div class="logo">StreamVerse</div>
-        <nav>
-            <ul>
-                <li><a href="#movies">Movies</a></li>
-                <li><a href="#series">Series</a></li>
-                <li><a href="#live">Live</a></li>
-                <li><a href="#mylist">My List</a></li>
-            </ul>
-        </nav>
+        <div class="menu-toggle" id="menu-toggle">☰</div>
         <div class="search-profile">
-            <input type="text" placeholder="Search">
+            <input type="text" id="search-bar" placeholder="Search" onkeyup="searchContent()">
             <div class="profile-icon"></div>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <h1>Beyond Earth</h1>
-        <p>Explore the unknown in this thrilling sci-fi adventure.</p>
-        <button>Watch Now</button>
+    <!-- Hero Section with Carousel -->
+    <section class="hero" id="hero">
+        <div class="hero-slide active" style="background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');">
+            <h1>Beyond Earth</h1>
+            <p>Explore the unknown in this thrilling sci-fi adventure.</p>
+            <button onclick="openModal('https://www.w3schools.com/html/mov_bbb.mp4')">Watch Now</button>
+        </div>
+        <div class="hero-slide" style="background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1536440136628-849c177e76ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');">
+            <h1>The Last Stand</h1>
+            <p>A battle for survival in a dystopian future.</p>
+            <button onclick="openModal('https://www.w3schools.com/html/mov_bbb.mp4')">Watch Now</button>
+        </div>
     </section>
 
     <!-- Content Sections -->
     <section class="content-section" id="movies">
         <h2>Trending Now</h2>
         <div class="content-row">
-            <div class="content-card">
+            <div class="content-card" data-title="The Last Stand">
                 <img src="https://images.unsplash.com/photo-1536440136628-849c177e76ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Movie 1">
-                <div class="overlay"><button>Play</button></div>
+                <div class="overlay"><button onclick="openModal('https://www.w3schools.com/html/mov_bbb.mp4')">Play</button></div>
             </div>
-            <div class="content-card">
+            <div class="content-card" data-title="The Edge">
                 <img src="https://images.unsplash.com/photo-1531251445707-1f000e1e06d0?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Movie 2">
-                <div class="overlay"><button>Play</button></div>
+                <div class="overlay"><button onclick="openModal('https://www.w3schools.com/html/mov_bbb.mp4')">Play</button></div>
             </div>
-            <div class="content-card">
+            <div class="content-card" data-title="Kingdom">
                 <img src="https://images.unsplash.com/photo-1535666669445-840bf8a4810c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Movie 3">
-                <div class="overlay"><button>Play</button></div>
-            </div>
-            <div class="content-card">
-                <img src="https://images.unsplash.com/photo-1532094349884-543bc11da2d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Movie 4">
-                <div class="overlay"><button>Play</button></div>
+                <div class="overlay"><button onclick="openModal('https://www.w3schools.com/html/mov_bbb.mp4')">Play</button></div>
             </div>
         </div>
     </section>
@@ -254,38 +334,66 @@
     <section class="content-section" id="series">
         <h2>Sci-Fi</h2>
         <div class="content-row">
-            <div class="content-card">
+            <div class="content-card" data-title="Beyond Earth">
                 <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Series 1">
-                <div class="overlay"><button>Play</button></div>
-            </div>
-            <div class="content-card">
-                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Series 2">
-                <div class="overlay"><button>Play</button></div>
-            </div>
-            <div class="content-card">
-                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Series 3">
-                <div class="overlay"><button>Play</button></div>
+                <div class="overlay"><button onclick="openModal('https://www.w3schools.com/html/mov_bbb.mp4')">Play</button></div>
             </div>
         </div>
     </section>
 
-    <section class="content-section" id="live">
-        <h2>Comedy</h2>
-        <div class="content-row">
-            <div class="content-card">
-                <img src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Comedy 1">
-                <div class="overlay"><button>Play</button></div>
-            </div>
-            <div class="content-card">
-                <img src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80" alt="Comedy 2">
-                <div class="overlay"><button>Play</button></div>
-            </div>
+    <!-- Modal for Video Playback -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">×</span>
+            <video controls>
+                <source id="modal-video" src="" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
         </div>
-    </section>
+    </div>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2023 StreamVerse. All rights reserved.</p>
-    </footer>
+    <script>
+        // Sidebar Toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        // Hero Carousel
+        const slides = document.querySelectorAll('.hero-slide');
+        let currentSlide = 0;
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+        }
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }, 5000);
+
+        // Search Functionality
+        function searchContent() {
+            const searchTerm = document.getElementById('search-bar').value.toLowerCase();
+            const cards = document.querySelectorAll('.content-card');
+            cards.forEach(card => {
+                const title = card.getAttribute('data-title').toLowerCase();
+                card.style.display = title.includes(searchTerm) ? 'block' : 'none';
+            });
+        }
+
+        // Modal for Video Playback
+        const modal = document.getElementById('modal');
+        const modalVideo = document.getElementById('modal-video');
+        function openModal(videoSrc) {
+            modalVideo.src = videoSrc;
+            modal.classList.add('active');
+        }
+        function closeModal() {
+            modal.classList.remove('active');
+            modalVideo.src = '';
+        }
+    </script>
 </body>
 </html>
